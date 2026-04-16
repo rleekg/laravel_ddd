@@ -1,0 +1,47 @@
+deptrac:
+  paths:
+    - ./app
+
+  layers:
+    - name: Domain
+      collectors:
+        - type: classNameRegex
+          value: '#^App\\Domain\\#'
+
+    - name: Application
+      collectors:
+        - type: classNameRegex
+          value: '#^App\\Application\\#'
+
+    - name: Infrastructure
+      collectors:
+        - type: classNameRegex
+          value: '#^App\\Infrastructure\\#'
+
+    - name: Presentation
+      collectors:
+        - type: classNameRegex
+          value: '#^App\\Presentation\\#'
+
+  ruleset:
+    Domain:
+      # Domain не зависит ни от кого
+    Application:
+      - Domain
+    Infrastructure:
+      - Domain
+      - Application
+    Presentation:
+      - Application
+
+  ignore_uncovered_internal_classes: true
+  skip_violations:
+    # Разрешить Presentation → Domain только для type-hints в исключениях
+    App\Presentation\Console\Commands\BalanceOperateCommand:
+      - App\Domain\Balance\Exceptions\InsufficientFundsException
+      - App\Domain\Identity\Exceptions\UserNotFoundException
+    App\Presentation\Console\Commands\CreateUserCommand:
+      - App\Domain\Identity\Exceptions\UserAlreadyExistsException
+    # Application handler dispatches Infrastructure job — pragmatic coupling via queue
+    App\Application\Balance\Handlers\QueueBalanceOperationHandler:
+      - App\Infrastructure\Queue\Jobs\ProcessBalanceOperationJob

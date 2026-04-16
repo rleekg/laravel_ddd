@@ -1,0 +1,10 @@
+parameters:
+    level: 9
+    paths:
+        - app
+    excludePaths:
+        - app/Infrastructure/Persistence/Eloquent/Models
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - message: '#Dead catch - App\\Domain\\Balance\\Exceptions\\InsufficientFundsException is never thrown in the try block#'
+          path: app/Infrastructure/Queue/Jobs/ProcessBalanceOperationJob.php
